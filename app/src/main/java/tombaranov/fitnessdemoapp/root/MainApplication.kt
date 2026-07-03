@@ -1,4 +1,4 @@
-package tombaranov.fitnessdemoapp
+package tombaranov.fitnessdemoapp.root
 
 import android.app.Application
 import org.koin.android.ext.koin.androidContext
