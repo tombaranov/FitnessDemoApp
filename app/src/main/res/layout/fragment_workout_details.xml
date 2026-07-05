@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".workoutdetails.presentation.WorkoutDetailsFragment">
 
-    <TextView
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/videoPlayer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello" />
+        android:layout_height="200dp" />
 
 </FrameLayout>
