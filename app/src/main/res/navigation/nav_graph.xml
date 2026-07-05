@@ -7,5 +7,19 @@
     <fragment
         android:id="@+id/workoutsFragment"
         android:name="tombaranov.fitnessdemoapp.workouts.presentation.WorkoutsFragment"
-        android:label="Workouts" />
+        android:label="Workouts">
+        <action
+            android:id="@+id/action_workoutsFragment_to_workoutDetailsFragment"
+            app:destination="@id/workoutDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/workoutDetailsFragment"
+        android:name="tombaranov.fitnessdemoapp.workoutdetails.presentation.WorkoutDetailsFragment"
+        android:label="WorkoutDetailsFragment">
+        <argument
+            android:name="workoutId"
+            app:argType="int" />
+    </fragment>
+
 </navigation>

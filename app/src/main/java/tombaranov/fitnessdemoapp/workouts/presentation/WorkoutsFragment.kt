@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
@@ -20,9 +21,8 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
     private lateinit var binding: FragmentWorkoutsBinding
 
     private val viewModel: WorkoutsViewModel by viewModel()
-    private val workoutAdapter: WorkoutAdapter = WorkoutAdapter(onItemClick = {
-
-    }
+    private val workoutAdapter: WorkoutAdapter = WorkoutAdapter(
+        onItemClick = { openDetailsScreen() }
     )
 
 
@@ -45,6 +45,10 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
         setupWorkoutsRecyclerView(view = view)
         observeUiState()
         viewModel.loadWorkouts()
+    }
+
+    private fun openDetailsScreen() {
+        findNavController().navigate(R.id.action_workoutsFragment_to_workoutDetailsFragment)
     }
 
     private fun updateUiState(uiState: WorkoutsUiState) {
