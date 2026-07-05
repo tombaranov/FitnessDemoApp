@@ -10,6 +10,7 @@ activity = "1.8.0"
 koin = "4.2.2"
 lifecycle = "2.10.0"
 navigationFragment = "2.9.8"
+exoPlayer = "1.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -23,6 +24,9 @@ koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version = "1.8.5" }
 androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
+androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "exoPlayer" }
+androidx-media3-exoplayer-dash = { group = "androidx.media3", name = "media3-exoplayer-dash,", version.ref = "exoPlayer" }
+androidx-media3-ui = { group = "androidx.media3", name = "media3-ui,", version.ref = "exoPlayer" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
