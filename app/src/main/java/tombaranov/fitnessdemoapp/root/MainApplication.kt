@@ -4,6 +4,7 @@ import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import tombaranov.fitnessdemoapp.core.coroutines.dispatchersModule
+import tombaranov.fitnessdemoapp.workoutdetails.di.workoutDetailsModule
 import tombaranov.fitnessdemoapp.workouts.di.workoutsModule
 
 class MainApplication : Application() {
@@ -12,7 +13,7 @@ class MainApplication : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@MainApplication)
-            modules(dispatchersModule, workoutsModule)
+            modules(dispatchersModule, workoutsModule, workoutDetailsModule)
         }
     }
 }
