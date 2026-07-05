@@ -20,7 +20,10 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
     private lateinit var binding: FragmentWorkoutsBinding
 
     private val viewModel: WorkoutsViewModel by viewModel()
-    private val workoutAdapter: WorkoutAdapter = WorkoutAdapter()
+    private val workoutAdapter: WorkoutAdapter = WorkoutAdapter(onItemClick = {
+
+    }
+    )
 
 
     override fun onCreateView(

@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import tombaranov.fitnessdemoapp.R
 
-class WorkoutAdapter : ListAdapter<WorkoutUiModel, WorkoutAdapter.WorkoutViewHolder>(DiffCallback) {
+class WorkoutAdapter(
+    private val onItemClick: (WorkoutUiModel) -> Unit
+) : ListAdapter<WorkoutUiModel, WorkoutAdapter.WorkoutViewHolder>(DiffCallback) {
 
     class WorkoutViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val titleView: TextView = view.findViewById(R.id.workoutTitle)
@@ -17,11 +19,18 @@ class WorkoutAdapter : ListAdapter<WorkoutUiModel, WorkoutAdapter.WorkoutViewHol
         fun bindTitle(title: String) {
             titleView.text = title
         }
+
+        fun bindOnClickListener(
+            item: WorkoutUiModel,
+            onItemClick: (WorkoutUiModel) -> Unit
+        ) {
+            titleView.text = item.title
+            itemView.setOnClickListener { onItemClick(item) }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkoutViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.workout_item, parent, false)
-
         return WorkoutViewHolder(view)
     }
 
@@ -31,7 +40,11 @@ class WorkoutAdapter : ListAdapter<WorkoutUiModel, WorkoutAdapter.WorkoutViewHol
     ) {
         val workout = getItem(position)
 
-        holder.bindTitle(workout.title)
+        holder.bindTitle(title = workout.title)
+        holder.bindOnClickListener(
+            item = workout,
+            onItemClick = onItemClick
+        )
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<WorkoutUiModel>() {
