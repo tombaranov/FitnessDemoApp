@@ -17,9 +17,6 @@
         android:id="@+id/workoutDetailsFragment"
         android:name="tombaranov.fitnessdemoapp.workoutdetails.presentation.WorkoutDetailsFragment"
         android:label="WorkoutDetailsFragment">
-        <argument
-            android:name="workoutId"
-            app:argType="int" />
     </fragment>
 
 </navigation>
