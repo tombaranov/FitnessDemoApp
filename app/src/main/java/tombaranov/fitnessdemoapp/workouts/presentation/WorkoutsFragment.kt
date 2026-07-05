@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -12,6 +11,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import tombaranov.fitnessdemoapp.R
 import tombaranov.fitnessdemoapp.databinding.FragmentWorkoutsBinding
 
@@ -19,7 +19,7 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
 
     private lateinit var binding: FragmentWorkoutsBinding
 
-    private val viewModel: WorkoutsViewModel by viewModels()
+    private val viewModel: WorkoutsViewModel by viewModel()
     private val workoutAdapter: WorkoutAdapter = WorkoutAdapter()
 
 
@@ -41,6 +41,7 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
 
         setupWorkoutsRecyclerView(view = view)
         observeUiState()
+        viewModel.loadWorkouts()
     }
 
     private fun updateUiState(uiState: WorkoutsUiState) {
