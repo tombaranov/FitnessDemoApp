@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">FitnessDemoApp</string>
+
+
+    <!-- Список тренировок -->
+    <string name="workouts_screen_workut_type_training">Тренировка</string>
+    <string name="workouts_screen_workut_type_live">Эфир</string>
+    <string name="workouts_screen_workut_type_complex">Комплекс</string>
+
 </resources>
