@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.koin)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.navigation.fragment)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
