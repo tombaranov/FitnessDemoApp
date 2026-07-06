@@ -8,5 +8,5 @@ data class WorkoutUiModel(
     val description: String?,
     @StringRes
     val type: Int,
-    val duration: Int,
+    val duration: String,
 )

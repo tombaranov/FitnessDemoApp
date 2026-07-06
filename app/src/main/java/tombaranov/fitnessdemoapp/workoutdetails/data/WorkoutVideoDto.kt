@@ -4,7 +4,7 @@ import tombaranov.fitnessdemoapp.workoutdetails.domain.WorkoutVideo
 
 data class WorkoutVideoDto(
     val id: Int?,
-    val duration: Int?,
+    val duration: String?,
     val link: String?,
 )
 

@@ -8,7 +8,7 @@ data class WorkoutDto(
     val title: String?,
     val description: String?,
     val type: Int?,
-    val duration: Int?,
+    val duration: String?,
 )
 
 fun WorkoutDto.toDomain(): Workout? {
