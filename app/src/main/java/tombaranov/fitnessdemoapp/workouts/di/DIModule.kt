@@ -6,8 +6,10 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import retrofit2.Retrofit
 import tombaranov.fitnessdemoapp.core.coroutines.DispatchersQualifiers
-import tombaranov.fitnessdemoapp.workouts.data.FakeWorkoutsRepository
+import tombaranov.fitnessdemoapp.workouts.data.WorkoutsApi
+import tombaranov.fitnessdemoapp.workouts.data.WorkoutsRepositoryImpl
 import tombaranov.fitnessdemoapp.workouts.domain.WorkoutsInteractor
 import tombaranov.fitnessdemoapp.workouts.domain.WorkoutsRepository
 import tombaranov.fitnessdemoapp.workouts.presentation.WorkoutsViewModel
@@ -16,8 +18,9 @@ val workoutsModule = module {
 
     factoryOf(::WorkoutsInteractor)
 
-    // TODO: Заменить на WorkoutsRepositoryImpl после реализации сетвого слоя
-    singleOf(::FakeWorkoutsRepository) bind WorkoutsRepository::class
+    singleOf(::WorkoutsRepositoryImpl) bind WorkoutsRepository::class
+
+    single { get<Retrofit>().create(WorkoutsApi::class.java) }
 
     viewModel {
         WorkoutsViewModel(
