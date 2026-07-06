@@ -1,2 +1,0 @@
-package tombaranov.fitnessdemoapp.di
-
