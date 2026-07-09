@@ -13,8 +13,10 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.HttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
 import tombaranov.fitnessdemoapp.R
 
@@ -38,8 +40,14 @@ class WorkoutDetailsFragment : Fragment() {
         initializePlayer()
     }
 
+    @OptIn(UnstableApi::class)
     private fun initializePlayer() {
-        player = ExoPlayer.Builder(requireContext()).build()
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
+            .setAllowCrossProtocolRedirects(true)
+
+        player = ExoPlayer.Builder(requireContext())
+            .setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory))
+            .build()
 
         val listener = object : Player.Listener {
 
