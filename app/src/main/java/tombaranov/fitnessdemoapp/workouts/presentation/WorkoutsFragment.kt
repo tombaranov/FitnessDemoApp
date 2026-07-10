@@ -1,19 +1,22 @@
 package tombaranov.fitnessdemoapp.workouts.presentation
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.chip.Chip
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import tombaranov.fitnessdemoapp.R
 import tombaranov.fitnessdemoapp.databinding.FragmentWorkoutsBinding
+import tombaranov.fitnessdemoapp.workouts.domain.Type
 import tombaranov.fitnessdemoapp.workouts.domain.Workout
 import tombaranov.fitnessdemoapp.workouts.domain.toUiModel
 
@@ -30,50 +33,12 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentWorkoutsBinding.bind(view)
 
-        binding.workoutsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.workoutsRecyclerView.adapter = workoutAdapter
-        binding.workoutsRetryButton.setOnClickListener { viewModel.loadWorkouts() }
-
-        setupFilters()
         observeUiState()
+        setupSearch()
+        setupFilters()
+        setupRecyclerView()
+
         viewModel.loadWorkouts()
-    }
-
-    private fun setupFilters() {
-        val chips = listOf(
-            binding.filterWorkout,
-            binding.filterComplex,
-            binding.filterLive,
-        )
-
-        chips.forEach { chip ->
-            setupChipClickListener(chip)
-        }
-        binding.resetFilters.setOnClickListener {
-            binding.workoutsFilterContainer.clearCheck()
-        }
-    }
-
-    private fun setupChipClickListener(chip: Chip) {
-        chip.setOnClickListener {
-            if (chip.isChecked) {
-                return@setOnClickListener
-            }
-
-            chip.isChecked = !chip.isChecked
-        }
-    }
-
-    private fun openDetailsScreen(workout: WorkoutUiModel) {
-        val bundle = Bundle().apply {
-            putInt(ARG_WORKOUT_ID, workout.id)
-            putString(ARG_WORKOUT_TITLE, workout.title)
-            putString(ARG_WORKOUT_TYPE, workout.typeName)
-            putString(ARG_WORKOUT_DESCRIPTION, workout.description)
-        }
-        findNavController().navigate(
-            R.id.action_workoutsFragment_to_workoutDetailsFragment, bundle
-        )
     }
 
     private fun observeUiState() {
@@ -89,6 +54,47 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
                 }
             }
         }
+    }
+
+    private fun setupSearch() {
+        binding.workoutsSearchInput.doOnTextChanged { newQuery, _, _, _ ->
+            viewModel.onSearchQueryChanged(query = newQuery.toString())
+        }
+    }
+
+    private fun setupFilters() {
+        binding.resetFilters.setOnClickListener {
+            binding.workoutsFilterContainer.clearCheck()
+            viewModel.resetFilters()
+        }
+
+        binding.workoutsFilterContainer.setOnCheckedStateChangeListener { _, checkedIds ->
+            val type = when (checkedIds.firstOrNull()) {
+                R.id.filterWorkout -> Type.Workout
+                R.id.filterComplex -> Type.Complex
+                R.id.filterLive -> Type.Live
+                else -> null
+            }
+
+            viewModel.onTypeFilterSelected(type)
+        }
+    }
+
+    private fun setupRecyclerView() {
+        binding.workoutsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.workoutsRecyclerView.adapter = workoutAdapter
+    }
+
+    private fun openDetailsScreen(workout: WorkoutUiModel) {
+        val bundle = Bundle().apply {
+            putInt(ARG_WORKOUT_ID, workout.id)
+            putString(ARG_WORKOUT_TITLE, workout.title)
+            putString(ARG_WORKOUT_TYPE, workout.typeName)
+            putString(ARG_WORKOUT_DESCRIPTION, workout.description)
+        }
+        findNavController().navigate(
+            R.id.action_workoutsFragment_to_workoutDetailsFragment, bundle
+        )
     }
 
     private fun showLoading() {
@@ -115,6 +121,8 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
     }
 
     private fun showServerError() {
+        binding.workoutsRetryButton.setOnClickListener { viewModel.loadWorkouts() }
+
         binding.workoutsLoadingProgress.isVisible = false
         binding.workoutsRecyclerView.isVisible = false
         binding.workoutsErrorContainer.isVisible = true
@@ -127,7 +135,5 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
         const val ARG_WORKOUT_TITLE = "workoutTitle"
         const val ARG_WORKOUT_TYPE = "workoutType"
         const val ARG_WORKOUT_DESCRIPTION = "workoutDescription"
-
-        fun newInstance() = WorkoutsFragment()
     }
 }
