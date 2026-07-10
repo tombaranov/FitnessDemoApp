@@ -1,10 +1,36 @@
 <resources>
     <string name="app_name">FitnessDemoApp</string>
 
+    <!-- Общее -->
+    <string name="workouts_error">Упс... что-то пошло не так</string>
+    <string name="workouts_retry">Повторить</string>
 
     <!-- Список тренировок -->
     <string name="workouts_screen_workut_type_training">Тренировка</string>
     <string name="workouts_screen_workut_type_live">Эфир</string>
     <string name="workouts_screen_workut_type_complex">Комплекс</string>
+
+    <!-- Детали тренировки -->
+    <string name="workout_details_no_description">Нет описания</string>
+    <string name="workout_details_type_label">Тип: %s</string>
+    <string name="workout_details_duration_label">Длительность: %s</string>
+
+    <plurals name="hours">
+        <item quantity="one">%d час</item>
+        <item quantity="few">%d часа</item>
+        <item quantity="many">%d часов</item>
+        <item quantity="other">%d часов</item>
+    </plurals>
+
+    <plurals name="minutes">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
+
+
+    <!-- Плеер -->
+    <string name="video_load_client_error">Упс… не удалось загрузить видео</string>
 
 </resources>
