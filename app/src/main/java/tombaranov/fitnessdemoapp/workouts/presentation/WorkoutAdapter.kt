@@ -15,36 +15,25 @@ class WorkoutAdapter(
 
     class WorkoutViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val titleView: TextView = view.findViewById(R.id.workoutTitle)
+        private val typeView: TextView = view.findViewById(R.id.workoutType)
+        private val durationView: TextView = view.findViewById(R.id.workoutDuration)
 
-        fun bindTitle(title: String) {
-            titleView.text = title
-        }
-
-        fun bindOnClickListener(
-            item: WorkoutUiModel,
-            onItemClick: (WorkoutUiModel) -> Unit
-        ) {
+        fun bind(item: WorkoutUiModel, onItemClick: (WorkoutUiModel) -> Unit) {
             titleView.text = item.title
+            typeView.text = item.typeName
+            durationView.text = item.duration
             itemView.setOnClickListener { onItemClick(item) }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkoutViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.workout_item, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.workout_item, parent, false)
         return WorkoutViewHolder(view)
     }
 
-    override fun onBindViewHolder(
-        holder: WorkoutViewHolder,
-        position: Int,
-    ) {
-        val workout = getItem(position)
-
-        holder.bindTitle(title = workout.title)
-        holder.bindOnClickListener(
-            item = workout,
-            onItemClick = onItemClick
-        )
+    override fun onBindViewHolder(holder: WorkoutViewHolder, position: Int) {
+        holder.bind(getItem(position), onItemClick)
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<WorkoutUiModel>() {
