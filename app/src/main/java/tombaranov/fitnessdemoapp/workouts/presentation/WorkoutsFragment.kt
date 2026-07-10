@@ -1,8 +1,7 @@
 package tombaranov.fitnessdemoapp.workouts.presentation
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
@@ -28,6 +27,18 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
     private val workoutAdapter: WorkoutAdapter = WorkoutAdapter(
         onItemClick = { openDetailsScreen(it) }
     )
+
+    override fun onResume() {
+        super.onResume()
+
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
+
+    override fun onDestroyView() {
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+
+        super.onDestroyView()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
