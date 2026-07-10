@@ -25,13 +25,18 @@ class VideoPlayerManager(
 ) {
 
     private var player: ExoPlayer? = null
+    private var lastVideoUrl: String? = null
+    private var savedPosition: Long = 0L
 
     private val _events = MutableSharedFlow<PlayerEvent>(extraBufferCapacity = 1)
     val events: SharedFlow<PlayerEvent> = _events.asSharedFlow()
 
     @OptIn(UnstableApi::class)
-    fun attachTo(playerView: PlayerView) {
-        release()
+    fun initialize(playerView: PlayerView) {
+        if (player != null) {
+            playerView.player = player
+            return
+        }
         val dataSourceFactory = DefaultHttpDataSource.Factory()
             .setAllowCrossProtocolRedirects(true)
 
@@ -50,14 +55,25 @@ class VideoPlayerManager(
         playerView.player = player
     }
 
-    fun play(videoUrl: String) {
-        val mediaItem = MediaItem.fromUri(videoUrl.toUri())
-        player?.setMediaItem(mediaItem)
-        player?.prepare()
-        player?.playWhenReady = true
+    fun prepare(videoUrl: String) {
+        val isNewVideo = videoUrl != lastVideoUrl
+
+        lastVideoUrl = videoUrl
+
+        if (isNewVideo) {
+            player?.setMediaItem(MediaItem.fromUri(videoUrl.toUri()))
+            player?.prepare()
+            player?.playWhenReady = true
+        } else {
+            if (savedPosition > 0L) {
+                player?.seekTo(savedPosition)
+            }
+            player?.playWhenReady = false
+        }
     }
 
-    fun release() {
+    fun saveAndRelease() {
+        savedPosition = player?.currentPosition ?: 0L
         player?.playWhenReady = false
         player?.release()
         player = null
