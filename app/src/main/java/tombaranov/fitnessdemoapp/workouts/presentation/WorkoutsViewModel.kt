@@ -43,8 +43,12 @@ class WorkoutsViewModel(
                     if (workoutsResult.workouts.isNotEmpty()) {
                         savedWorkouts = workoutsResult.workouts
 
-                        _uiState.value = WorkoutsUiState.Loaded(
-                            workouts = workoutsResult.workouts,
+                        val currentQuery = getEnteredSearchQuery()
+                        val currentType = getSelectedFilterType()
+
+                        applyFilters(
+                            query = currentQuery,
+                            type = currentType,
                         )
                     } else {
                         _uiState.value = WorkoutsUiState.ClientError
