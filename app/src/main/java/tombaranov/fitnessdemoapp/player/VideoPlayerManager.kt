@@ -12,13 +12,22 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+
+sealed interface PlayerEvent {
+    object Error : PlayerEvent
+}
 
 class VideoPlayerManager(
     private val context: Context,
-    private val onError: () -> Unit,
 ) {
 
     private var player: ExoPlayer? = null
+
+    private val _events = MutableSharedFlow<PlayerEvent>(extraBufferCapacity = 1)
+    val events: SharedFlow<PlayerEvent> = _events.asSharedFlow()
 
     @OptIn(UnstableApi::class)
     fun attachTo(playerView: PlayerView) {
@@ -33,7 +42,7 @@ class VideoPlayerManager(
                 exoPlayer.addListener(object : Player.Listener {
                     override fun onPlayerError(error: PlaybackException) {
                         Log.e("Player", "Playback error: ${error.message}", error)
-                        onError()
+                        _events.tryEmit(PlayerEvent.Error)
                     }
                 })
             }
