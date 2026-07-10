@@ -12,9 +12,12 @@ import tombaranov.fitnessdemoapp.workouts.data.WorkoutsApi
 import tombaranov.fitnessdemoapp.workouts.data.WorkoutsRepositoryImpl
 import tombaranov.fitnessdemoapp.workouts.domain.WorkoutsInteractor
 import tombaranov.fitnessdemoapp.workouts.domain.WorkoutsRepository
+import tombaranov.fitnessdemoapp.workouts.presentation.SearchHelper
 import tombaranov.fitnessdemoapp.workouts.presentation.WorkoutsViewModel
 
 val workoutsModule = module {
+
+    factoryOf(::SearchHelper)
 
     factoryOf(::WorkoutsInteractor)
 
@@ -26,6 +29,7 @@ val workoutsModule = module {
         WorkoutsViewModel(
             workoutsInteractor = get(),
             ioDispatcher = get(named(DispatchersQualifiers.IO)),
+            searchHelper = get(),
         )
     }
 }

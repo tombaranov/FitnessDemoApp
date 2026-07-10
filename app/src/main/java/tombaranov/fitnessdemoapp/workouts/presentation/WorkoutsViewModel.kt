@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tombaranov.fitnessdemoapp.workouts.domain.Type
 import tombaranov.fitnessdemoapp.workouts.domain.Workout
 import tombaranov.fitnessdemoapp.workouts.domain.WorkoutsInteractor
 import tombaranov.fitnessdemoapp.workouts.domain.WorkoutsResult
@@ -16,9 +17,11 @@ import tombaranov.fitnessdemoapp.workouts.domain.WorkoutsResult
 class WorkoutsViewModel(
     private val workoutsInteractor: WorkoutsInteractor,
     private val ioDispatcher: CoroutineDispatcher,
+    private val searchHelper: SearchHelper,
 ) : ViewModel() {
 
     private var loadWorkoutsJob: Job? = null
+    private var savedWorkouts: List<Workout> = emptyList()
 
     private val _uiState: MutableStateFlow<WorkoutsUiState> =
         MutableStateFlow(WorkoutsUiState.Loading)
@@ -36,10 +39,13 @@ class WorkoutsViewModel(
             }
 
             when (workoutsResult) {
-
                 is WorkoutsResult.Success -> {
                     if (workoutsResult.workouts.isNotEmpty()) {
-                        _uiState.value = WorkoutsUiState.Loaded(workouts = workoutsResult.workouts)
+                        savedWorkouts = workoutsResult.workouts
+
+                        _uiState.value = WorkoutsUiState.Loaded(
+                            workouts = workoutsResult.workouts,
+                        )
                     } else {
                         _uiState.value = WorkoutsUiState.ClientError
                     }
@@ -56,6 +62,45 @@ class WorkoutsViewModel(
         }
     }
 
+    fun onSearchQueryChanged(query: String) {
+        applyFilters(
+            query = query,
+            type = getSelectedFilterType()
+        )
+    }
+
+    fun onTypeFilterSelected(type: Type?) {
+        applyFilters(
+            query = getEnteredSearchQuery(),
+            type = type
+        )
+    }
+
+    fun resetFilters() {
+        applyFilters(
+            query = getEnteredSearchQuery(),
+            type = null
+        )
+    }
+
+    private fun getEnteredSearchQuery(): String {
+        return (_uiState.value as? WorkoutsUiState.Loaded)?.searchQuery.orEmpty()
+    }
+
+    private fun getSelectedFilterType(): Type? {
+        return (_uiState.value as? WorkoutsUiState.Loaded)?.selectedType
+    }
+
+    private fun applyFilters(query: String = "", type: Type?) {
+        val filtered = searchHelper.apply(savedWorkouts, type, query)
+
+        _uiState.value = WorkoutsUiState.Loaded(
+            workouts = filtered,
+            searchQuery = query,
+            selectedType = type,
+        )
+    }
+
     private fun cancelLoadWorkoutsJob() {
         if (loadWorkoutsJob != null) {
             loadWorkoutsJob?.cancel()
@@ -66,7 +111,12 @@ class WorkoutsViewModel(
 
 sealed interface WorkoutsUiState {
     object Loading : WorkoutsUiState
-    data class Loaded(val workouts: List<Workout>) : WorkoutsUiState
+    data class Loaded(
+        val workouts: List<Workout> = emptyList(),
+        val searchQuery: String = "",
+        val selectedType: Type? = null,
+    ) : WorkoutsUiState
+
     object ClientError : WorkoutsUiState
     object ServerError : WorkoutsUiState
 }
