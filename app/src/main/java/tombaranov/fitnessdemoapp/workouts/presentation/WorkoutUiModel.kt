@@ -7,6 +7,7 @@ data class WorkoutUiModel(
     val title: String,
     val description: String?,
     @StringRes
-    val type: Int,
+    val typeRes: Int,
+    val typeName: String,
     val duration: String,
 )

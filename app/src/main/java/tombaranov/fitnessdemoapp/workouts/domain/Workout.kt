@@ -11,23 +11,19 @@ data class Workout(
     val duration: String,
 )
 
-enum class Type {
-    Workout, Live, Complex
+enum class Type(val displayNameRes: Int) {
+    Workout(R.string.workouts_screen_workut_type_training),
+    Live(R.string.workouts_screen_workut_type_live),
+    Complex(R.string.workouts_screen_workut_type_complex)
 }
 
-fun Workout.toUiModel(): WorkoutUiModel {
-
-    val type = when (this.type) {
-        Type.Workout -> R.string.workouts_screen_workut_type_training
-        Type.Live -> R.string.workouts_screen_workut_type_live
-        Type.Complex -> R.string.workouts_screen_workut_type_complex
-    }
-
+fun Workout.toUiModel(typeName: String): WorkoutUiModel {
     return WorkoutUiModel(
         id = this.id,
         title = this.title,
         description = this.description,
-        type = type,
+        typeRes = this.type.displayNameRes,
+        typeName = typeName,
         duration = this.duration,
     )
 }
