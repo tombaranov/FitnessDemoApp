@@ -58,7 +58,7 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
                 viewModel.uiState.collect { state ->
                     when (state) {
                         WorkoutsUiState.Loading -> showLoading()
-                        is WorkoutsUiState.Loaded -> showWorkouts(state.workouts)
+                        is WorkoutsUiState.Loaded -> showWorkouts(state)
                         WorkoutsUiState.ClientError -> showClientError()
                         WorkoutsUiState.ServerError -> showServerError()
                     }
@@ -114,11 +114,24 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
         binding.workoutsLoadingProgress.isVisible = true
     }
 
-    private fun showWorkouts(workouts: List<Workout>) {
+    private fun showWorkouts(state: WorkoutsUiState.Loaded) {
         binding.workoutsLoadingProgress.isVisible = false
         binding.workoutsErrorContainer.isVisible = false
         binding.workoutsRecyclerView.isVisible = true
-        workoutAdapter.submitList(workouts.map { workout ->
+
+        if (binding.workoutsSearchInput.text.toString() != state.searchQuery) {
+            binding.workoutsSearchInput.setText(state.searchQuery)
+        }
+
+        val chipId = when (state.selectedType) {
+            Type.Workout -> R.id.filterWorkout
+            Type.Complex -> R.id.filterComplex
+            Type.Live -> R.id.filterLive
+            null -> View.NO_ID
+        }
+        binding.workoutsFilterContainer.check(chipId)
+
+        workoutAdapter.submitList(state.workouts.map { workout ->
             workout.toUiModel(typeName = getString(workout.type.displayNameRes))
         })
     }
