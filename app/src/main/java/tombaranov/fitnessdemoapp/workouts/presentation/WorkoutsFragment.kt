@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.chip.Chip
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import tombaranov.fitnessdemoapp.R
@@ -33,8 +34,34 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
         binding.workoutsRecyclerView.adapter = workoutAdapter
         binding.workoutsRetryButton.setOnClickListener { viewModel.loadWorkouts() }
 
+        setupFilters()
         observeUiState()
         viewModel.loadWorkouts()
+    }
+
+    private fun setupFilters() {
+        val chips = listOf(
+            binding.filterWorkout,
+            binding.filterComplex,
+            binding.filterLive,
+        )
+
+        chips.forEach { chip ->
+            setupChipClickListener(chip)
+        }
+        binding.resetFilters.setOnClickListener {
+            binding.workoutsFilterContainer.clearCheck()
+        }
+    }
+
+    private fun setupChipClickListener(chip: Chip) {
+        chip.setOnClickListener {
+            if (chip.isChecked) {
+                return@setOnClickListener
+            }
+
+            chip.isChecked = !chip.isChecked
+        }
     }
 
     private fun openDetailsScreen(workout: WorkoutUiModel) {
