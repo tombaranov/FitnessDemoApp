@@ -3,6 +3,7 @@ package tombaranov.fitnessdemoapp.workouts.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,21 +18,28 @@ class WorkoutsViewModel(
     private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
+    private var loadWorkoutsJob: Job? = null
+
     private val _uiState: MutableStateFlow<WorkoutsUiState> =
         MutableStateFlow(WorkoutsUiState.Loading)
     val uiState: StateFlow<WorkoutsUiState>
         get() = _uiState.asStateFlow()
 
     fun loadWorkouts() {
-        viewModelScope.launch {
+        cancelLoadWorkoutsJob()
+
+        loadWorkoutsJob = viewModelScope.launch {
             _uiState.value = WorkoutsUiState.Loading
 
-            when (val result = withContext(ioDispatcher) {
+            val workoutsResult = withContext(ioDispatcher) {
                 workoutsInteractor.loadAll()
-            }) {
+            }
+
+            when (workoutsResult) {
+
                 is WorkoutsResult.Success -> {
-                    if (result.workouts.isNotEmpty()) {
-                        _uiState.value = WorkoutsUiState.Loaded(workouts = result.workouts)
+                    if (workoutsResult.workouts.isNotEmpty()) {
+                        _uiState.value = WorkoutsUiState.Loaded(workouts = workoutsResult.workouts)
                     } else {
                         _uiState.value = WorkoutsUiState.ClientError
                     }
@@ -45,6 +53,13 @@ class WorkoutsViewModel(
                     _uiState.value = WorkoutsUiState.ServerError
                 }
             }
+        }
+    }
+
+    private fun cancelLoadWorkoutsJob() {
+        if (loadWorkoutsJob != null) {
+            loadWorkoutsJob?.cancel()
+            loadWorkoutsJob = null
         }
     }
 }
