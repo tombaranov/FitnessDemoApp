@@ -8,8 +8,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tombaranov.fitnessdemoapp.workouts.domain.Workout
 import tombaranov.fitnessdemoapp.workouts.domain.WorkoutsInteractor
-import tombaranov.fitnessdemoapp.workouts.domain.toUiModel
+import tombaranov.fitnessdemoapp.workouts.domain.WorkoutsResult
 
 class WorkoutsViewModel(
     private val workoutsInteractor: WorkoutsInteractor,
@@ -25,29 +26,32 @@ class WorkoutsViewModel(
         viewModelScope.launch {
             _uiState.value = WorkoutsUiState.Loading
 
-            val loadedWorkouts = withContext(ioDispatcher) {
+            when (val result = withContext(ioDispatcher) {
                 workoutsInteractor.loadAll()
-            }
+            }) {
+                is WorkoutsResult.Success -> {
+                    if (result.workouts.isNotEmpty()) {
+                        _uiState.value = WorkoutsUiState.Loaded(workouts = result.workouts)
+                    } else {
+                        _uiState.value = WorkoutsUiState.ClientError
+                    }
+                }
 
-            if (loadedWorkouts.isNotEmpty()) {
-                val uiWorkouts = loadedWorkouts.map { it.toUiModel() }
-                _uiState.value = WorkoutsUiState.Loaded(
-                    workouts = uiWorkouts
-                )
-            } else {
-                _uiState.value = WorkoutsUiState.LoadingFailed
+                WorkoutsResult.ClientError -> {
+                    _uiState.value = WorkoutsUiState.ClientError
+                }
+
+                WorkoutsResult.ServerError -> {
+                    _uiState.value = WorkoutsUiState.ServerError
+                }
             }
         }
     }
 }
 
 sealed interface WorkoutsUiState {
-
     object Loading : WorkoutsUiState
-
-    data class Loaded(
-        val workouts: List<WorkoutUiModel>
-    ) : WorkoutsUiState
-
-    object LoadingFailed : WorkoutsUiState
+    data class Loaded(val workouts: List<Workout>) : WorkoutsUiState
+    object ClientError : WorkoutsUiState
+    object ServerError : WorkoutsUiState
 }
