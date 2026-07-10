@@ -18,6 +18,7 @@ import tombaranov.fitnessdemoapp.databinding.FragmentWorkoutsBinding
 import tombaranov.fitnessdemoapp.workouts.domain.Type
 import tombaranov.fitnessdemoapp.workouts.domain.toUiModel
 
+// TODO: Провести рефакторинг после завершения работы
 class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
 
     private lateinit var binding: FragmentWorkoutsBinding
