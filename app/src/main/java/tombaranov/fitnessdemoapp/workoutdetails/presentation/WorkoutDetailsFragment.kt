@@ -1,8 +1,12 @@
 package tombaranov.fitnessdemoapp.workoutdetails.presentation
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -17,6 +21,7 @@ import tombaranov.fitnessdemoapp.databinding.FragmentWorkoutDetailsBinding
 import tombaranov.fitnessdemoapp.workoutdetails.domain.WorkoutVideo
 import tombaranov.fitnessdemoapp.workouts.presentation.WorkoutsFragment
 
+// TODO: Провести рефакторинг после завершения работы
 class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
 
     private lateinit var binding: FragmentWorkoutDetailsBinding
@@ -26,12 +31,60 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentWorkoutDetailsBinding.bind(view)
+        trackOrientationChanges()
 
-        setupWorkoutInfo()
         observeVideoState()
         observePlayerEvents()
-        binding.retryVideoButton.setOnClickListener { viewModel.retryLoadVideo() }
+
+        setupWorkoutInfo()
         loadVideo()
+    }
+
+    private fun trackOrientationChanges() {
+        val orientation = resources.configuration.orientation
+
+        when (orientation) {
+            Configuration.ORIENTATION_LANDSCAPE -> enterFullscreenMode()
+            Configuration.ORIENTATION_PORTRAIT -> exitFullscreenMode()
+            else -> Unit
+        }
+    }
+
+    // TODO: Провести рефакторинг после завершения работы
+    private fun enterFullscreenMode() {
+        binding.detailsTitle.isVisible = false
+        binding.workoutInfo.isVisible = false
+
+        val playerContainerLayoutParams = binding.videoContainer.layoutParams as android.widget.LinearLayout.LayoutParams
+        playerContainerLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+        playerContainerLayoutParams.weight = 1f
+        playerContainerLayoutParams.setMargins(0, 0, 0, 0)
+        binding.videoContainer.layoutParams = playerContainerLayoutParams
+
+        val windowInsetsController = activity?.window?.let {
+            WindowInsetsControllerCompat(it, binding.videoContainer)
+        }
+        windowInsetsController?.hide(WindowInsetsCompat.Type.systemBars())
+        windowInsetsController?.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    }
+
+    // TODO: Провести рефакторинг после завершения работы
+    private fun exitFullscreenMode() {
+        binding.detailsTitle.isVisible = true
+        binding.workoutInfo.isVisible = true
+
+        val playerContainerLayoutParams = binding.videoContainer.layoutParams as android.widget.LinearLayout.LayoutParams
+        playerContainerLayoutParams.height = resources.getDimensionPixelSize(R.dimen.video_player_height)
+        playerContainerLayoutParams.weight = 0f
+        val margin = resources.getDimensionPixelSize(R.dimen.video_player_margin)
+        playerContainerLayoutParams.setMargins(margin, margin / 2, margin, 0)
+        binding.videoContainer.layoutParams = playerContainerLayoutParams
+
+        val windowInsetsController = activity?.window?.let {
+            WindowInsetsControllerCompat(it, binding.videoContainer)
+        }
+        windowInsetsController?.show(WindowInsetsCompat.Type.systemBars())
     }
 
     private fun setupWorkoutInfo() {
@@ -39,8 +92,10 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
             binding.detailsTitle.text =
                 args.getString(WorkoutsFragment.ARG_WORKOUT_TITLE, "")
             binding.detailsType.text =
-                getString(R.string.workout_details_type_label,
-                    args.getString(WorkoutsFragment.ARG_WORKOUT_TYPE, ""))
+                getString(
+                    R.string.workout_details_type_label,
+                    args.getString(WorkoutsFragment.ARG_WORKOUT_TYPE, "")
+                )
             binding.detailsDescription.text =
                 args.getString(WorkoutsFragment.ARG_WORKOUT_DESCRIPTION, "")
                     .takeUnless { it.isNullOrBlank() }
@@ -107,7 +162,10 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
 
     private fun formatDurationLabel(duration: Int?): String {
         if (duration == null || duration <= 0) return ""
-        return getString(R.string.workout_details_duration_label, DurationFormatter.format(duration, resources))
+        return getString(
+            R.string.workout_details_duration_label,
+            DurationFormatter.format(duration, resources)
+        )
     }
 
     private fun showClientError() {
@@ -119,6 +177,8 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
     }
 
     private fun showServerError() {
+        binding.retryVideoButton.setOnClickListener { viewModel.retryLoadVideo() }
+
         binding.videoLoadingProgress.isVisible = false
         binding.videoPlayer.isVisible = false
         binding.videoErrorContainer.isVisible = true
