@@ -7,16 +7,22 @@
     android:orientation="vertical"
     tools:context=".workouts.presentation.WorkoutsFragment">
 
-    <EditText
-        android:id="@+id/workoutsSearchInput"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:drawableStart="@android:drawable/ic_menu_search"
-        android:drawablePadding="8dp"
-        android:hint="@string/workouts_screen_search_placeholder"
-        android:inputType="text"
-        android:maxLines="1" />
+        app:endIconMode="clear_text"
+        app:endIconTint="?android:attr/textColorSecondary">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/workoutsSearchInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/workouts_screen_search_placeholder"
+            android:inputType="text"
+            android:maxLines="1" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
