@@ -6,7 +6,7 @@
     <string name="workouts_retry">Повторить</string>
 
     <!-- Список тренировок -->
-    <string name="workouts_filter_all">Все</string>
+    <string name="workouts_filter_reset">Сбросить фильтры</string>
     <string name="workouts_screen_workut_type_training">Тренировка</string>
     <string name="workouts_screen_workut_type_live">Эфир</string>
     <string name="workouts_screen_workut_type_complex">Комплекс</string>

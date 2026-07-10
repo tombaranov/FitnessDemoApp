@@ -18,44 +18,60 @@
         android:inputType="text"
         android:maxLines="1" />
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/workoutsFilterContainer"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        app:singleSelection="true">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-        <com.google.android.material.chip.Chip
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/workoutsFilterContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/filterWorkout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="@string/workouts_screen_workut_type_training"
+                android:textSize="8sp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/filterComplex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="@string/workouts_screen_workut_type_complex"
+                android:textSize="8sp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/filterLive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="@string/workouts_screen_workut_type_live"
+                android:textSize="8sp" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+        <TextView
             android:id="@+id/filterAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checkable="true"
-            android:text="@string/workouts_filter_all" />
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/workouts_filter_reset"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="10sp" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/filterWorkout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checkable="true"
-            android:text="@string/workouts_screen_workut_type_training" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/filterComplex"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checkable="true"
-            android:text="@string/workouts_screen_workut_type_complex" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/filterLive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checkable="true"
-            android:text="@string/workouts_screen_workut_type_live" />
-
-    </com.google.android.material.chip.ChipGroup>
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
