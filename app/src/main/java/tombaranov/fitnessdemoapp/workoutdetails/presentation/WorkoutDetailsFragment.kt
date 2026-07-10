@@ -188,7 +188,7 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
 
     override fun onStop() {
         super.onStop()
-        playerManager.saveAndRelease()
+        playerManager.savePlaybackState()
         binding.videoPlayer.player = null
     }
 

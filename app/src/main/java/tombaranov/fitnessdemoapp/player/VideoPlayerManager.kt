@@ -72,8 +72,14 @@ class VideoPlayerManager(
         }
     }
 
-    fun saveAndRelease() {
+    fun savePlaybackState() {
         savedPosition = player?.currentPosition ?: 0L
+        player?.playWhenReady = true
+    }
+
+    fun release() {
+        savedPosition = 0L
+        lastVideoUrl = ""
         player?.playWhenReady = false
         player?.release()
         player = null
