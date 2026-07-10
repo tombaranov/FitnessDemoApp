@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import tombaranov.fitnessdemoapp.R
 import tombaranov.fitnessdemoapp.databinding.FragmentWorkoutsBinding
-import tombaranov.fitnessdemoapp.workoutdetails.presentation.DurationFormatter
 import tombaranov.fitnessdemoapp.workouts.domain.Workout
 import tombaranov.fitnessdemoapp.workouts.domain.toUiModel
 
@@ -43,7 +42,6 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
             putInt(ARG_WORKOUT_ID, workout.id)
             putString(ARG_WORKOUT_TITLE, workout.title)
             putString(ARG_WORKOUT_TYPE, workout.typeName)
-            putString(ARG_WORKOUT_DURATION, workout.duration)
             putString(ARG_WORKOUT_DESCRIPTION, workout.description)
         }
         findNavController().navigate(
@@ -78,13 +76,7 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
         binding.workoutsRecyclerView.isVisible = true
         workoutAdapter.submitList(workouts.map { workout ->
             workout.toUiModel(typeName = getString(workout.type.displayNameRes))
-                .copy(duration = formatWorkoutDuration(workout.duration))
         })
-    }
-
-    private fun formatWorkoutDuration(rawDuration: String): String {
-        val totalMinutes = rawDuration.toIntOrNull()
-        return totalMinutes?.let { DurationFormatter.format(it, resources) } ?: rawDuration
     }
 
     private fun showClientError() {
@@ -107,7 +99,6 @@ class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
         const val ARG_WORKOUT_ID = "workoutId"
         const val ARG_WORKOUT_TITLE = "workoutTitle"
         const val ARG_WORKOUT_TYPE = "workoutType"
-        const val ARG_WORKOUT_DURATION = "workoutDuration"
         const val ARG_WORKOUT_DESCRIPTION = "workoutDescription"
 
         fun newInstance() = WorkoutsFragment()

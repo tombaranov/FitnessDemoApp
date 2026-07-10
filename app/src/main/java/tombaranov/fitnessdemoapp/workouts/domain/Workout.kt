@@ -8,7 +8,7 @@ data class Workout(
     val title: String,
     val description: String?,
     val type: Type,
-    val duration: String,
+    val duration: Int?,
 )
 
 enum class Type(val displayNameRes: Int) {

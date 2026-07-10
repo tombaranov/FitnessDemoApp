@@ -24,7 +24,7 @@ fun WorkoutDto.toDomain(): Workout? {
         title = this.title ?: return null,
         description = this.description,
         type = workoutType,
-        duration = this.duration ?: return null
+        duration = this.duration?.toIntOrNull()
     )
 }
 

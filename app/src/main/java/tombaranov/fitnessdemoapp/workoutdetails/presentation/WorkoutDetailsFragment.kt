@@ -14,6 +14,7 @@ import tombaranov.fitnessdemoapp.player.PlayerEvent
 import tombaranov.fitnessdemoapp.player.VideoPlayerManager
 import tombaranov.fitnessdemoapp.R
 import tombaranov.fitnessdemoapp.databinding.FragmentWorkoutDetailsBinding
+import tombaranov.fitnessdemoapp.workoutdetails.domain.WorkoutVideo
 import tombaranov.fitnessdemoapp.workouts.presentation.WorkoutsFragment
 
 class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
@@ -24,20 +25,27 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding = FragmentWorkoutDetailsBinding.bind(view)
 
+        setupWorkoutInfo()
         observeVideoState()
         observePlayerEvents()
-
-        setupWorkoutInfo()
+        binding.retryVideoButton.setOnClickListener { viewModel.retryLoadVideo() }
         loadVideo()
     }
 
-    private fun formatDurationLabel(duration: String): String {
-        val totalMinutes = duration.toIntOrNull()
-        val formatted = totalMinutes?.let { DurationFormatter.format(it, resources) } ?: duration
-        return getString(R.string.workout_details_duration_label, formatted)
+    private fun setupWorkoutInfo() {
+        arguments?.let { args ->
+            binding.detailsTitle.text =
+                args.getString(WorkoutsFragment.ARG_WORKOUT_TITLE, "")
+            binding.detailsType.text =
+                getString(R.string.workout_details_type_label,
+                    args.getString(WorkoutsFragment.ARG_WORKOUT_TYPE, ""))
+            binding.detailsDescription.text =
+                args.getString(WorkoutsFragment.ARG_WORKOUT_DESCRIPTION, "")
+                    .takeUnless { it.isNullOrBlank() }
+                    ?: getString(R.string.workout_details_no_description)
+        }
     }
 
     private fun observeVideoState() {
@@ -46,7 +54,7 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
                 viewModel.videoState.collect { state ->
                     when (state) {
                         VideoUiState.Loading -> showLoading()
-                        is VideoUiState.Loaded -> showVideo(state.videoUrl)
+                        is VideoUiState.Loaded -> showVideo(state.video)
                         VideoUiState.ClientError -> showClientError()
                         VideoUiState.ServerError -> showServerError()
                     }
@@ -67,39 +75,13 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
         }
     }
 
-    private fun setupWorkoutInfo() {
-        arguments?.let { args ->
-            binding.detailsTitle.text =
-                args.getString(WorkoutsFragment.ARG_WORKOUT_TITLE, DEFAULT_WORKOUT_TITLE)
-            binding.detailsType.text =
-                getString(
-                    R.string.workout_details_type_label,
-                    args.getString(WorkoutsFragment.ARG_WORKOUT_TYPE, DEFAULT_WORKOUT_TYPE)
-                )
-            binding.detailsDuration.text = formatDurationLabel(
-                args.getString(WorkoutsFragment.ARG_WORKOUT_DURATION, DEFAULT_WORKOUT_DURATION)
-            )
-            binding.detailsDescription.text =
-                args.getString(
-                    WorkoutsFragment.ARG_WORKOUT_DESCRIPTION,
-                    DEFAULT_WORKOUT_DESCRIPTION
-                )
-                    .takeUnless { it.isNullOrBlank() }
-                    ?: getString(R.string.workout_details_no_description)
-        }
-
-        binding.retryVideoButton.setOnClickListener { viewModel.retryLoadVideo() }
-    }
-
     private fun loadVideo() {
         val workoutId = arguments?.getInt(WorkoutsFragment.ARG_WORKOUT_ID, INVALID_WORKOUT_ID)
             ?: INVALID_WORKOUT_ID
-
         if (workoutId <= 0) {
             showClientError()
             return
         }
-
         viewModel.loadVideo(workoutId)
     }
 
@@ -109,12 +91,23 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
         binding.videoLoadingProgress.isVisible = true
     }
 
-    private fun showVideo(videoUrl: String) {
+    private fun showVideo(video: WorkoutVideo) {
         binding.videoLoadingProgress.isVisible = false
         binding.videoErrorContainer.isVisible = false
         binding.videoPlayer.isVisible = true
+
+        binding.detailsDuration.apply {
+            text = formatDurationLabel(video.duration)
+            isVisible = video.duration != null && video.duration > 0
+        }
+
         playerManager.initialize(binding.videoPlayer)
-        playerManager.prepare(videoUrl)
+        playerManager.prepare(video.link)
+    }
+
+    private fun formatDurationLabel(duration: Int?): String {
+        if (duration == null || duration <= 0) return ""
+        return getString(R.string.workout_details_duration_label, DurationFormatter.format(duration, resources))
     }
 
     private fun showClientError() {
@@ -140,11 +133,6 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
     }
 
     companion object {
-        const val DEFAULT_WORKOUT_TITLE = ""
-        const val DEFAULT_WORKOUT_TYPE = ""
-        const val DEFAULT_WORKOUT_DURATION = ""
-        const val DEFAULT_WORKOUT_DESCRIPTION = ""
-
         const val INVALID_WORKOUT_ID = -1
 
         fun newInstance() = WorkoutDetailsFragment()

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import tombaranov.fitnessdemoapp.R
+import tombaranov.fitnessdemoapp.workoutdetails.presentation.DurationFormatter
 
 class WorkoutAdapter(
     private val onItemClick: (WorkoutUiModel) -> Unit
@@ -22,6 +23,8 @@ class WorkoutAdapter(
             titleView.text = item.title
             typeView.text = item.typeName
             durationView.text = item.duration
+                ?.let { DurationFormatter.format(it, itemView.resources) }
+                .orEmpty()
             itemView.setOnClickListener { onItemClick(item) }
         }
     }

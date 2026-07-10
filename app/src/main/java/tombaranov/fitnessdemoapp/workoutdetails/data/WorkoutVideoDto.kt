@@ -15,7 +15,7 @@ fun WorkoutVideoDto.toDomain(): WorkoutVideo? {
 
     return WorkoutVideo(
         id = this.id ?: return null,
-        duration = this.duration ?: return null,
+        duration = this.duration?.toIntOrNull(),
         link = if (videoLink.startsWith(HTTP_SCHEME)) videoLink else ApiConfig.BASE_URL + videoLink,
     )
 }

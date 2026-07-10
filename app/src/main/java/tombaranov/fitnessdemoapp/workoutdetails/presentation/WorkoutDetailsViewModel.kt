@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import tombaranov.fitnessdemoapp.workoutdetails.domain.WorkoutVideo
 import tombaranov.fitnessdemoapp.workoutdetails.domain.WorkoutVideoInteractor
 import tombaranov.fitnessdemoapp.workoutdetails.domain.WorkoutVideoResult
 
@@ -46,7 +47,7 @@ class WorkoutDetailsViewModel(
                 workoutVideoInteractor.loadWorkoutVideoBy(currentWorkoutId)
             }) {
                 is WorkoutVideoResult.Success -> {
-                    _videoState.value = VideoUiState.Loaded(videoUrl = result.video.link)
+                    _videoState.value = VideoUiState.Loaded(video = result.video)
                 }
 
                 WorkoutVideoResult.ClientError -> {
@@ -74,7 +75,7 @@ class WorkoutDetailsViewModel(
 
 sealed interface VideoUiState {
     object Loading : VideoUiState
-    data class Loaded(val videoUrl: String) : VideoUiState
+    data class Loaded(val video: WorkoutVideo) : VideoUiState
     object ClientError : VideoUiState
     object ServerError : VideoUiState
 }
