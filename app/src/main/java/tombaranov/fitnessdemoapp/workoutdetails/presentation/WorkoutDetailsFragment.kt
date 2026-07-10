@@ -1,89 +1,152 @@
 package tombaranov.fitnessdemoapp.workoutdetails.presentation
 
-import android.net.Uri
-import androidx.fragment.app.viewModels
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.annotation.OptIn
-import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackException
-import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.DefaultHttpDataSource
-import androidx.media3.datasource.HttpDataSource
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.ui.PlayerView
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import tombaranov.fitnessdemoapp.player.PlayerEvent
+import tombaranov.fitnessdemoapp.player.VideoPlayerManager
 import tombaranov.fitnessdemoapp.R
+import tombaranov.fitnessdemoapp.databinding.FragmentWorkoutDetailsBinding
+import tombaranov.fitnessdemoapp.workouts.presentation.WorkoutsFragment
 
-class WorkoutDetailsFragment : Fragment() {
+class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
 
-    private var player: ExoPlayer? = null
-    private lateinit var playerView: PlayerView
-
-    private val viewModel: WorkoutDetailsViewModel by viewModels()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_workout_details, container, false)
-    }
+    private lateinit var binding: FragmentWorkoutDetailsBinding
+    private val viewModel: WorkoutDetailsViewModel by viewModel()
+    private val playerManager: VideoPlayerManager by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        playerView = view.findViewById(R.id.videoPlayer)
-        initializePlayer()
+
+        binding = FragmentWorkoutDetailsBinding.bind(view)
+
+        observeVideoState()
+        observePlayerEvents()
+
+        setupWorkoutInfo()
+        loadVideo()
     }
 
-    @OptIn(UnstableApi::class)
-    private fun initializePlayer() {
-        val dataSourceFactory = DefaultHttpDataSource.Factory()
-            .setAllowCrossProtocolRedirects(true)
+    private fun formatDurationLabel(duration: String): String {
+        val totalMinutes = duration.toIntOrNull()
+        val formatted = totalMinutes?.let { DurationFormatter.format(it, resources) } ?: duration
+        return getString(R.string.workout_details_duration_label, formatted)
+    }
 
-        player = ExoPlayer.Builder(requireContext())
-            .setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory))
-            .build()
-
-        val listener = object : Player.Listener {
-
-            @OptIn(UnstableApi::class)
-            override fun onPlayerError(error: PlaybackException) {
-                val cause = error.cause
-                if (cause is HttpDataSource.InvalidResponseCodeException) {
-                    Log.e("Player", "HTTP code: ${cause.responseCode}")
-                    Log.e("Player", "Headers: ${cause.headerFields}")
+    private fun observeVideoState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.videoState.collect { state ->
+                    when (state) {
+                        VideoUiState.Loading -> showLoading()
+                        is VideoUiState.Loaded -> showVideo(state.videoUrl)
+                        VideoUiState.ClientError -> showClientError()
+                        VideoUiState.ServerError -> showServerError()
+                    }
                 }
             }
         }
+    }
 
-        player?.addListener(listener)
-        playerView.player = player
+    private fun observePlayerEvents() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                playerManager.events.collect { event ->
+                    when (event) {
+                        PlayerEvent.Error -> showServerError()
+                    }
+                }
+            }
+        }
+    }
 
-        val mediaItem = MediaItem.fromUri(Uri.parse("https://ref.test.kolsa.ru/example-01.mp4"))
+    private fun setupWorkoutInfo() {
+        arguments?.let { args ->
+            binding.detailsTitle.text =
+                args.getString(WorkoutsFragment.ARG_WORKOUT_TITLE, DEFAULT_WORKOUT_TITLE)
+            binding.detailsType.text =
+                getString(
+                    R.string.workout_details_type_label,
+                    args.getString(WorkoutsFragment.ARG_WORKOUT_TYPE, DEFAULT_WORKOUT_TYPE)
+                )
+            binding.detailsDuration.text = formatDurationLabel(
+                args.getString(WorkoutsFragment.ARG_WORKOUT_DURATION, DEFAULT_WORKOUT_DURATION)
+            )
+            binding.detailsDescription.text =
+                args.getString(
+                    WorkoutsFragment.ARG_WORKOUT_DESCRIPTION,
+                    DEFAULT_WORKOUT_DESCRIPTION
+                )
+                    .takeUnless { it.isNullOrBlank() }
+                    ?: getString(R.string.workout_details_no_description)
+        }
 
-        player?.setMediaItem(mediaItem)
-        player?.prepare()
-        player?.playWhenReady = true
-        player?.play()
+        binding.retryVideoButton.setOnClickListener { viewModel.retryLoadVideo() }
+    }
+
+    private fun loadVideo() {
+        val workoutId = arguments?.getInt(WorkoutsFragment.ARG_WORKOUT_ID, INVALID_WORKOUT_ID)
+            ?: INVALID_WORKOUT_ID
+
+        if (workoutId <= 0) {
+            showClientError()
+            return
+        }
+
+        viewModel.loadVideo(workoutId)
+    }
+
+    private fun showLoading() {
+        binding.videoPlayer.isVisible = false
+        binding.videoErrorContainer.isVisible = false
+        binding.videoLoadingProgress.isVisible = true
+    }
+
+    private fun showVideo(videoUrl: String) {
+        binding.videoLoadingProgress.isVisible = false
+        binding.videoErrorContainer.isVisible = false
+        binding.videoPlayer.isVisible = true
+        playerManager.initialize(binding.videoPlayer)
+        playerManager.prepare(videoUrl)
+    }
+
+    private fun showClientError() {
+        binding.videoLoadingProgress.isVisible = false
+        binding.videoPlayer.isVisible = false
+        binding.videoErrorContainer.isVisible = true
+        binding.videoErrorText.setText(R.string.video_load_client_error)
+        binding.retryVideoButton.isVisible = false
+    }
+
+    private fun showServerError() {
+        binding.videoLoadingProgress.isVisible = false
+        binding.videoPlayer.isVisible = false
+        binding.videoErrorContainer.isVisible = true
+        binding.videoErrorText.setText(R.string.workouts_error)
+        binding.retryVideoButton.isVisible = true
     }
 
     override fun onStop() {
         super.onStop()
-        releasePlayer()
-    }
-
-    private fun releasePlayer() {
-        player?.playWhenReady = false
-        player?.release()
-        player = null
+        playerManager.saveAndRelease()
+        binding.videoPlayer.player = null
     }
 
     companion object {
+        const val DEFAULT_WORKOUT_TITLE = ""
+        const val DEFAULT_WORKOUT_TYPE = ""
+        const val DEFAULT_WORKOUT_DURATION = ""
+        const val DEFAULT_WORKOUT_DESCRIPTION = ""
+
+        const val INVALID_WORKOUT_ID = -1
+
         fun newInstance() = WorkoutDetailsFragment()
     }
 }
