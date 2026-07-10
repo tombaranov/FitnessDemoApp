@@ -25,7 +25,7 @@ val workoutsModule = module {
     viewModel {
         WorkoutsViewModel(
             workoutsInteractor = get(),
-            ioDispatcher = get(named(DispatchersQualifiers.IO))
+            ioDispatcher = get(named(DispatchersQualifiers.IO)),
         )
     }
 }

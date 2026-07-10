@@ -2,10 +2,12 @@ package tombaranov.fitnessdemoapp.workoutdetails.di
 
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
+import tombaranov.fitnessdemoapp.core.coroutines.DispatchersQualifiers
 import tombaranov.fitnessdemoapp.workoutdetails.data.WorkoutVideoApi
 import tombaranov.fitnessdemoapp.workoutdetails.data.WorkoutVideoRepositoryImpl
 import tombaranov.fitnessdemoapp.workoutdetails.domain.WorkoutVideoInteractor
@@ -19,5 +21,10 @@ val workoutDetailsModule = module {
 
     single { get<Retrofit>().create(WorkoutVideoApi::class.java) }
 
-    viewModelOf(::WorkoutDetailsViewModel)
+    viewModel {
+        WorkoutDetailsViewModel(
+            workoutVideoInteractor = get(),
+            ioDispatcher = get(named(DispatchersQualifiers.IO)),
+        )
+    }
 }
