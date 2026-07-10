@@ -1,45 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://android.com"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".workouts.presentation.WorkoutsFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/workoutsRecyclerView"
+    <EditText
+        android:id="@+id/workoutsSearchInput"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-    <ProgressBar
-        android:id="@+id/workoutsLoadingProgress"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+        android:layout_margin="16dp"
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:drawablePadding="8dp"
+        android:hint="Поиск"
+        android:inputType="text"
+        android:maxLines="1" />
 
-    <LinearLayout
-        android:id="@+id/workoutsErrorContainer"
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/workoutsFilterContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        app:checkedChip="@id/filterAll"
+        app:singleSelection="true">
 
-        <TextView
-            android:id="@+id/workoutsErrorText"
+        <com.google.android.material.chip.Chip
+            android:id="@+id/filterAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
+            android:checkable="true"
+            android:text="@string/workouts_filter_all" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/workoutsRetryButton"
+        <com.google.android.material.chip.Chip
+            android:id="@+id/filterWorkout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/workouts_retry" />
+            android:checkable="true"
+            android:text="@string/workouts_screen_workut_type_training" />
 
-    </LinearLayout>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/filterComplex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/workouts_screen_workut_type_complex" />
 
-</FrameLayout>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/filterLive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/workouts_screen_workut_type_live" />
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/workoutsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <ProgressBar
+            android:id="@+id/workoutsLoadingProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/workoutsErrorContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/workoutsErrorText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/workoutsRetryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/workouts_retry" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</LinearLayout>
