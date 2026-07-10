@@ -7,12 +7,12 @@ class SearchHelper {
 
     fun apply(
         workouts: List<Workout>,
-        searchQuery: String,
-        selectedFilterType: Type?
+        selectedFilterType: Type?,
+        searchQuery: String = "",
     ): List<Workout> {
         return workouts
             .filter { workout ->
-                workout.title.contains(searchQuery, ignoreCase = true)
+                searchQuery.isBlank() || workout.title.contains(searchQuery, ignoreCase = true)
             }
             .filter { workout ->
                 selectedFilterType == null || workout.type == selectedFilterType
