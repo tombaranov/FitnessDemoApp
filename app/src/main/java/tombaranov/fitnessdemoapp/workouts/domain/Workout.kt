@@ -12,9 +12,9 @@ data class Workout(
 )
 
 enum class Type(val displayNameRes: Int) {
-    Workout(R.string.workouts_screen_workut_type_training),
-    Live(R.string.workouts_screen_workut_type_live),
-    Complex(R.string.workouts_screen_workut_type_complex)
+    Workout(R.string.workouts_screen_workout_type_training),
+    Live(R.string.workouts_screen_workout_type_live),
+    Complex(R.string.workouts_screen_workout_type_complex)
 }
 
 fun Workout.toUiModel(typeName: String): WorkoutUiModel {
