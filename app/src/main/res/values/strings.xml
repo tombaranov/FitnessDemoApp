@@ -2,14 +2,15 @@
     <string name="app_name">FitnessDemoApp</string>
 
     <!-- Общее -->
-    <string name="workouts_error">Упс... что-то пошло не так</string>
+    <string name="workouts_error">Упс… что-то пошло не так</string>
     <string name="workouts_retry">Повторить</string>
 
     <!-- Список тренировок -->
-    <string name="workouts_filter_reset">Сбросить фильтры</string>
-    <string name="workouts_screen_workut_type_training">Тренировка</string>
-    <string name="workouts_screen_workut_type_live">Эфир</string>
-    <string name="workouts_screen_workut_type_complex">Комплекс</string>
+    <string name="workouts_screen_search_placeholder">Введите название тренировки</string>
+    <string name="workouts_screen_reset_filters_title">Сбросить фильтры</string>
+    <string name="workouts_screen_workout_type_training">Тренировка</string>
+    <string name="workouts_screen_workout_type_live">Эфир</string>
+    <string name="workouts_screen_workout_type_complex">Комплекс</string>
 
     <!-- Детали тренировки -->
     <string name="workout_details_no_description">Нет описания</string>
