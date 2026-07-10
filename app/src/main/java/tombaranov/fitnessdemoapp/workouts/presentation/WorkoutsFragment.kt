@@ -16,7 +16,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import tombaranov.fitnessdemoapp.R
 import tombaranov.fitnessdemoapp.databinding.FragmentWorkoutsBinding
 import tombaranov.fitnessdemoapp.workouts.domain.Type
-import tombaranov.fitnessdemoapp.workouts.domain.Workout
 import tombaranov.fitnessdemoapp.workouts.domain.toUiModel
 
 class WorkoutsFragment : Fragment(R.layout.fragment_workouts) {
