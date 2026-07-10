@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tombaranov.fitnessdemoapp.workoutdetails.domain.WorkoutVideoInteractor
+import tombaranov.fitnessdemoapp.workoutdetails.domain.WorkoutVideoResult
 
 class WorkoutDetailsViewModel(
     private val workoutVideoInteractor: WorkoutVideoInteractor,
@@ -41,17 +42,20 @@ class WorkoutDetailsViewModel(
         loadWorkoutVideoJob = viewModelScope.launch {
             _videoState.value = VideoUiState.Loading
 
-            try {
-                val video = withContext(ioDispatcher) {
-                    workoutVideoInteractor.loadWorkoutVideoBy(currentWorkoutId)
+            when (val result = withContext(ioDispatcher) {
+                workoutVideoInteractor.loadWorkoutVideoBy(currentWorkoutId)
+            }) {
+                is WorkoutVideoResult.Success -> {
+                    _videoState.value = VideoUiState.Loaded(videoUrl = result.video.link)
                 }
-                if (video != null) {
-                    _videoState.value = VideoUiState.Loaded(videoUrl = video.link)
-                } else {
-                    _videoState.value = VideoUiState.Error
+
+                WorkoutVideoResult.ClientError -> {
+                    _videoState.value = VideoUiState.ClientError
                 }
-            } catch (e: Exception) {
-                _videoState.value = VideoUiState.Error
+
+                WorkoutVideoResult.ServerError -> {
+                    _videoState.value = VideoUiState.ServerError
+                }
             }
         }
     }
@@ -71,5 +75,6 @@ class WorkoutDetailsViewModel(
 sealed interface VideoUiState {
     object Loading : VideoUiState
     data class Loaded(val videoUrl: String) : VideoUiState
-    object Error : VideoUiState
+    object ClientError : VideoUiState
+    object ServerError : VideoUiState
 }

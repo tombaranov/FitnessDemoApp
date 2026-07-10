@@ -24,5 +24,20 @@ sealed class Response<out T> {
         ) : Failure()
 
         data class Another(val throwable: Throwable) : Failure()
+
+        val isClientError: Boolean
+            get() = when (this) {
+                BadRequest,
+                Unauthorized,
+                Forbidden,
+                NotFound,
+                is TooManyRequests,
+                ClosedRequest -> true
+
+                is HttpError -> httpCode in ErrorCode.http400ErrorRange
+                else -> false
+            }
     }
 }
+
+
