@@ -22,8 +22,7 @@ class VideoPlayerManager(
 ) : VideoPlayer {
 
     private var player: ExoPlayer? = null
-    private var lastVideoUrl: String? = null
-    private var savedPosition: Long = 0L
+    private var playbackState: PlaybackState? = null
 
     private val _events = MutableSharedFlow<PlayerEvent>(extraBufferCapacity = 2)
     override val events: SharedFlow<PlayerEvent> = _events.asSharedFlow()
@@ -36,7 +35,6 @@ class VideoPlayerManager(
 
         override fun onTracksChanged(tracks: Tracks) {
             val videoTracks = videoTrackMapper.mapTracks(tracks)
-
             _events.tryEmit(PlayerEvent.TracksChanged(videoTracks))
         }
     }
@@ -58,24 +56,27 @@ class VideoPlayerManager(
     }
 
     override fun prepare(videoUrl: String) {
-        val isNewVideo = videoUrl != lastVideoUrl
+        val currentSession = playbackState
+        val isNewVideo = videoUrl != currentSession?.url
+        val position = if (isNewVideo) 0L else currentSession?.position ?: 0L
 
-        lastVideoUrl = videoUrl
+        playbackState = PlaybackState(url = videoUrl, position = position)
 
         if (isNewVideo) {
             player?.setMediaItem(MediaItem.fromUri(videoUrl.toUri()))
             player?.prepare()
             player?.playWhenReady = true
         } else {
-            if (savedPosition > 0L) {
-                player?.seekTo(savedPosition)
+            if (position > 0L) {
+                player?.seekTo(position)
             }
             player?.playWhenReady = false
         }
     }
 
     override fun savePlaybackState() {
-        savedPosition = player?.currentPosition ?: 0L
+        val currentPosition = player?.currentPosition ?: 0L
+        playbackState = playbackState?.copy(position = currentPosition)
         player?.playWhenReady = true
     }
 
@@ -84,10 +85,14 @@ class VideoPlayerManager(
     }
 
     fun release() {
-        savedPosition = 0L
-        lastVideoUrl = ""
+        playbackState = null
         player?.playWhenReady = false
         player?.release()
         player = null
     }
+
+    private data class PlaybackState(
+        val url: String,
+        val position: Long = 0L,
+    )
 }
