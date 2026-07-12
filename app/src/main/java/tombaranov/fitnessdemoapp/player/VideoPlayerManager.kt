@@ -56,9 +56,8 @@ class VideoPlayerManager(
     }
 
     override fun prepare(videoUrl: String) {
-        val currentSession = playbackState
-        val isNewVideo = videoUrl != currentSession?.url
-        val position = if (isNewVideo) 0L else currentSession?.position ?: 0L
+        val isNewVideo = videoUrl != playbackState?.url
+        val position = if (isNewVideo) 0L else playbackState?.position ?: 0L
 
         playbackState = PlaybackState(url = videoUrl, position = position)
 
