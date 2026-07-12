@@ -57,7 +57,8 @@ class VideoPlayerManager(
 
     override fun prepare(videoUrl: String) {
         val isNewVideo = videoUrl != playbackState?.url
-        val position = if (isNewVideo) 0L else playbackState?.position ?: 0L
+        val position = if (isNewVideo) START_PLAYBACK_POSITION else playbackState?.position
+            ?: START_PLAYBACK_POSITION
 
         playbackState = PlaybackState(url = videoUrl, position = position)
 
@@ -66,7 +67,7 @@ class VideoPlayerManager(
             player?.prepare()
             player?.playWhenReady = true
         } else {
-            if (position > 0L) {
+            if (position > START_PLAYBACK_POSITION) {
                 player?.seekTo(position)
             }
             player?.playWhenReady = false
@@ -74,7 +75,7 @@ class VideoPlayerManager(
     }
 
     override fun savePlaybackState() {
-        val currentPosition = player?.currentPosition ?: 0L
+        val currentPosition = player?.currentPosition ?: START_PLAYBACK_POSITION
         playbackState = playbackState?.copy(position = currentPosition)
         player?.playWhenReady = true
     }
@@ -92,6 +93,10 @@ class VideoPlayerManager(
 
     private data class PlaybackState(
         val url: String,
-        val position: Long = 0L,
+        val position: Long = START_PLAYBACK_POSITION,
     )
+
+    companion object {
+        private const val START_PLAYBACK_POSITION = 0L
+    }
 }
