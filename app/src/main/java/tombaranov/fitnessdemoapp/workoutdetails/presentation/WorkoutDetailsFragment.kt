@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -38,6 +39,7 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
         observeVideoState()
         observePlayerEvents()
 
+        setupTopBar()
         setupWorkoutInfo()
         loadVideo()
     }
@@ -54,6 +56,7 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
 
     // TODO: Провести рефакторинг после завершения работы
     private fun enterFullscreenMode() {
+        binding.topBar.isVisible = false
         binding.detailsTitle.isVisible = false
         binding.workoutInfo.isVisible = false
 
@@ -73,6 +76,7 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
 
     // TODO: Провести рефакторинг после завершения работы
     private fun exitFullscreenMode() {
+        binding.topBar.isVisible = true
         binding.detailsTitle.isVisible = true
         binding.workoutInfo.isVisible = true
 
@@ -87,6 +91,12 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
             WindowInsetsControllerCompat(it, binding.videoContainer)
         }
         windowInsetsController?.show(WindowInsetsCompat.Type.systemBars())
+    }
+
+    private fun setupTopBar() {
+        binding.topBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun setupWorkoutInfo() {

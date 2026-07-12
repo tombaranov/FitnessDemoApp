@@ -7,6 +7,12 @@
     android:orientation="vertical"
     tools:context=".workoutdetails.presentation.WorkoutDetailsFragment">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/ic_arrow_back" />
+
     <TextView
         android:id="@+id/detailsTitle"
         android:layout_width="wrap_content"
