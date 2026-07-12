@@ -24,7 +24,7 @@ class VideoPlayerManager(
     private var player: ExoPlayer? = null
     private var playbackState: PlaybackState? = null
 
-    private val _events = MutableSharedFlow<PlayerEvent>(extraBufferCapacity = 2)
+    private val _events = MutableSharedFlow<PlayerEvent>(extraBufferCapacity = 1, replay = 1)
     override val events: SharedFlow<PlayerEvent> = _events.asSharedFlow()
 
     private val playerListener = object : Player.Listener {
