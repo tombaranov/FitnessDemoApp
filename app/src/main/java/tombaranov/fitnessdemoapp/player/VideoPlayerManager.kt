@@ -13,7 +13,10 @@ import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import tombaranov.fitnessdemoapp.player.factory.ExoPlayerFactory
 import tombaranov.fitnessdemoapp.player.mappers.VideoTrackMapper
+import tombaranov.fitnessdemoapp.player.tracks.VideoTrack
+import tombaranov.fitnessdemoapp.player.tracks.VideoTrackController
 
 class VideoPlayerManager(
     private val exoPlayerFactory: ExoPlayerFactory,

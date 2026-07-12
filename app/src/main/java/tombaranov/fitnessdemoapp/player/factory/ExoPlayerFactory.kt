@@ -1,4 +1,4 @@
-package tombaranov.fitnessdemoapp.player
+package tombaranov.fitnessdemoapp.player.factory
 
 import android.content.Context
 import androidx.annotation.OptIn

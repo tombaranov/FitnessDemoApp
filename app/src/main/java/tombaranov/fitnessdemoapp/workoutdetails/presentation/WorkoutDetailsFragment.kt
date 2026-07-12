@@ -16,7 +16,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import tombaranov.fitnessdemoapp.player.VideoTrack
+import tombaranov.fitnessdemoapp.player.tracks.VideoTrack
 import tombaranov.fitnessdemoapp.player.PlayerEvent
 import tombaranov.fitnessdemoapp.player.VideoPlayer
 import tombaranov.fitnessdemoapp.R

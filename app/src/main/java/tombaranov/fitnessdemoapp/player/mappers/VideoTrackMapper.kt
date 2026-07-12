@@ -2,7 +2,7 @@ package tombaranov.fitnessdemoapp.player.mappers
 
 import androidx.media3.common.C
 import androidx.media3.common.Tracks
-import tombaranov.fitnessdemoapp.player.VideoTrack
+import tombaranov.fitnessdemoapp.player.tracks.VideoTrack
 
 class VideoTrackMapper {
 

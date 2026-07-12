@@ -1,4 +1,4 @@
-package tombaranov.fitnessdemoapp.player
+package tombaranov.fitnessdemoapp.player.tracks
 
 import androidx.media3.common.C
 import androidx.media3.common.TrackSelectionOverride

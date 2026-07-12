@@ -1,4 +1,4 @@
-package tombaranov.fitnessdemoapp.player
+package tombaranov.fitnessdemoapp.player.tracks
 
 data class VideoTrack(
     val trackIndex: Int,

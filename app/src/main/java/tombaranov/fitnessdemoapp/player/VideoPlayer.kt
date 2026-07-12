@@ -2,6 +2,7 @@ package tombaranov.fitnessdemoapp.player
 
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.flow.SharedFlow
+import tombaranov.fitnessdemoapp.player.tracks.VideoTrack
 
 interface VideoPlayer {
 
