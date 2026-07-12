@@ -34,5 +34,6 @@
 
     <!-- Плеер -->
     <string name="video_load_client_error">Упс… не удалось загрузить видео</string>
+    <string name="video_video_track_dialog_title">Качество видео</string>
 
 </resources>

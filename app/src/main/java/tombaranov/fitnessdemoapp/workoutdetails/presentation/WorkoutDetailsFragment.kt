@@ -11,9 +11,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import tombaranov.fitnessdemoapp.player.VideoTrack
 import tombaranov.fitnessdemoapp.player.PlayerEvent
 import tombaranov.fitnessdemoapp.player.VideoPlayerManager
 import tombaranov.fitnessdemoapp.R
@@ -35,6 +37,7 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
 
         observeVideoState()
         observePlayerEvents()
+        observeVideoTracks()
 
         setupWorkoutInfo()
         loadVideo()
@@ -128,6 +131,38 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
                 }
             }
         }
+    }
+
+    private fun observeVideoTracks() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                playerManager.videoTracks.collect { tracks ->
+                    binding.videoTrackButton.isVisible = tracks.isNotEmpty()
+
+                    if (tracks.isEmpty()) return@collect
+
+                    val selectedTrack = tracks.firstOrNull { it.isSelected } ?: tracks.first()
+                    binding.videoTrackButton.text = selectedTrack.label
+                    binding.videoTrackButton.setOnClickListener {
+                        showVideoTrackSelectionDialog(tracks)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showVideoTrackSelectionDialog(tracks: List<VideoTrack>) {
+        val labels = tracks.map { it.label }.toTypedArray()
+        val selectedIndex = tracks.indexOfFirst { it.isSelected }
+            .takeIf { it >= 0 } ?: 0
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.video_video_track_dialog_title)
+            .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
+                playerManager.selectVideoTrack(tracks[which])
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun loadVideo() {
