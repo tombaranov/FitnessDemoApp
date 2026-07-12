@@ -27,4 +27,6 @@ rootProject.name = "FitnessDemoApp"
 include(":app")
 include(":core:network")
 include(":core:coroutines")
+include(":feature:player:api")
+include(":feature:player:impl")
  

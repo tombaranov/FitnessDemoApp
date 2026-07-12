@@ -7,11 +7,11 @@ import tombaranov.fitnessdemoapp.player.factory.ExoPlayerFactory
 import tombaranov.fitnessdemoapp.player.VideoPlayer
 import tombaranov.fitnessdemoapp.player.VideoPlayerManager
 import tombaranov.fitnessdemoapp.player.tracks.VideoTrackController
-import tombaranov.fitnessdemoapp.player.mappers.VideoTrackMapper
+import tombaranov.fitnessdemoapp.player.mappers.VideoTrackProvider
 
 val playerModule = module {
     singleOf(::ExoPlayerFactory)
     singleOf(::VideoTrackController)
-    singleOf(::VideoTrackMapper)
+    singleOf(::VideoTrackProvider)
     singleOf(::VideoPlayerManager) { bind<VideoPlayer>() }
 }

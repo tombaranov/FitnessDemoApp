@@ -14,14 +14,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import tombaranov.fitnessdemoapp.player.factory.ExoPlayerFactory
-import tombaranov.fitnessdemoapp.player.mappers.VideoTrackMapper
+import tombaranov.fitnessdemoapp.player.mappers.VideoTrackProvider
 import tombaranov.fitnessdemoapp.player.tracks.VideoTrack
 import tombaranov.fitnessdemoapp.player.tracks.VideoTrackController
 
 class VideoPlayerManager(
     private val exoPlayerFactory: ExoPlayerFactory,
     private val trackController: VideoTrackController,
-    private val videoTrackMapper: VideoTrackMapper,
+    private val videoTrackProvider: VideoTrackProvider,
 ) : VideoPlayer {
 
     private var player: ExoPlayer? = null
@@ -37,7 +37,7 @@ class VideoPlayerManager(
         }
 
         override fun onTracksChanged(tracks: Tracks) {
-            val videoTracks = videoTrackMapper.mapTracks(tracks)
+            val videoTracks = videoTrackProvider.getVideTracksFrom(tracks)
             _events.tryEmit(PlayerEvent.TracksChanged(videoTracks))
         }
     }

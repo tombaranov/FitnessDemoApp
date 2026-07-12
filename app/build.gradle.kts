@@ -40,6 +40,8 @@ android {
 dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:coroutines"))
+    implementation(project(":feature:player:api"))
+    implementation(project(":feature:player:impl"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

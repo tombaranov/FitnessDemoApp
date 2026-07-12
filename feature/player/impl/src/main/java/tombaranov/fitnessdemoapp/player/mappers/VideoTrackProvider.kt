@@ -4,9 +4,9 @@ import androidx.media3.common.C
 import androidx.media3.common.Tracks
 import tombaranov.fitnessdemoapp.player.tracks.VideoTrack
 
-class VideoTrackMapper {
+class VideoTrackProvider {
 
-    fun mapTracks(tracks: Tracks): List<VideoTrack> {
+    fun getVideTracksFrom(tracks: Tracks): List<VideoTrack> {
         return tracks.groups
             .filter { it.type == C.TRACK_TYPE_VIDEO }
             .flatMap { group ->
