@@ -17,7 +17,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import tombaranov.fitnessdemoapp.player.VideoTrack
 import tombaranov.fitnessdemoapp.player.PlayerEvent
-import tombaranov.fitnessdemoapp.player.VideoPlayerManager
+import tombaranov.fitnessdemoapp.player.VideoPlayer
 import tombaranov.fitnessdemoapp.R
 import tombaranov.fitnessdemoapp.databinding.FragmentWorkoutDetailsBinding
 import tombaranov.fitnessdemoapp.workoutdetails.domain.WorkoutVideo
@@ -28,7 +28,7 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
 
     private lateinit var binding: FragmentWorkoutDetailsBinding
     private val viewModel: WorkoutDetailsViewModel by viewModel()
-    private val playerManager: VideoPlayerManager by inject()
+    private val playerManager: VideoPlayer by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -37,7 +37,6 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
 
         observeVideoState()
         observePlayerEvents()
-        observeVideoTracks()
 
         setupWorkoutInfo()
         loadVideo()
@@ -127,27 +126,22 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
                 playerManager.events.collect { event ->
                     when (event) {
                         PlayerEvent.Error -> showServerError()
+                        is PlayerEvent.TracksChanged -> onTracksChanged(event.tracks)
                     }
                 }
             }
         }
     }
 
-    private fun observeVideoTracks() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                playerManager.videoTracks.collect { tracks ->
-                    binding.videoTrackButton.isVisible = tracks.isNotEmpty()
+    private fun onTracksChanged(tracks: List<VideoTrack>) {
+        binding.videoTrackButton.isVisible = tracks.isNotEmpty()
 
-                    if (tracks.isEmpty()) return@collect
+        if (tracks.isEmpty()) return
 
-                    val selectedTrack = tracks.firstOrNull { it.isSelected } ?: tracks.first()
-                    binding.videoTrackButton.text = selectedTrack.label
-                    binding.videoTrackButton.setOnClickListener {
-                        showVideoTrackSelectionDialog(tracks)
-                    }
-                }
-            }
+        val selectedTrack = tracks.firstOrNull { it.isSelected } ?: tracks.first()
+        binding.videoTrackButton.text = selectedTrack.label
+        binding.videoTrackButton.setOnClickListener {
+            showVideoTrackSelectionDialog(tracks)
         }
     }
 
@@ -224,7 +218,7 @@ class WorkoutDetailsFragment : Fragment(R.layout.fragment_workout_details) {
     override fun onStop() {
         super.onStop()
         playerManager.savePlaybackState()
-        binding.videoPlayer.player = null
+        playerManager.detach(binding.videoPlayer)
     }
 
     companion object {
