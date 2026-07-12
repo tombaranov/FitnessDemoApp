@@ -7,7 +7,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
-import tombaranov.fitnessdemoapp.core.coroutines.DispatchersQualifiers
+import fitnessdemoapp.core.coroutines.DispatchersQualifiers
 import tombaranov.fitnessdemoapp.workoutdetails.data.WorkoutVideoApi
 import tombaranov.fitnessdemoapp.workoutdetails.data.WorkoutVideoRepositoryImpl
 import tombaranov.fitnessdemoapp.workoutdetails.domain.WorkoutVideoInteractor

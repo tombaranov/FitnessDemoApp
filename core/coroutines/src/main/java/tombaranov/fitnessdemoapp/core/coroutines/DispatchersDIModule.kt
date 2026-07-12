@@ -1,4 +1,4 @@
-package tombaranov.fitnessdemoapp.core.coroutines
+package fitnessdemoapp.core.coroutines
 
 import kotlinx.coroutines.Dispatchers
 import org.koin.core.qualifier.named
