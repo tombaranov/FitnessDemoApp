@@ -54,9 +54,9 @@ WorkoutsFragment  ──(action)──►  WorkoutDetailsFragment
 10) Плеер сохраняет состояние воспроизведения при выходе из деталей тренировки и повторном возврате
 
 ## Стек
-DI - Koin
-UI: Views (XML), Fragment, SingleActivity, MVVM, RecyclerView для отображения списка
-Язык: Kotlin
-Сеть: Retrofit
-Медиа: ExoPlayer
+- DI - Koin
+- UI: Views (XML), Fragment, SingleActivity, MVVM, RecyclerView для отображения списка
+- Язык: Kotlin
+- Сеть: Retrofit
+- Медиа: ExoPlayer
 
